@@ -1,1 +1,1 @@
-Please download the lastest version. Old versions will be updated (replaced by the new version) during the semester.
+The lecture recordings are uploaded to https://v.douyu.com/author/rEdlVo1Mo87N
