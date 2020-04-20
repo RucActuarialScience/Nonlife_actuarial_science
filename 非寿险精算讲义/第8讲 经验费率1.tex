@@ -1,0 +1,221 @@
+\documentclass[professionalfont]{beamer}
+\usepackage{newtxtext}
+\usepackage[heading = false, scheme = plain]{ctex}
+\mode<presentation>{\usetheme{Warsaw}}
+%\usecolortheme{dove}
+\setbeamertemplate{footline}{}
+\beamertemplatenavigationsymbolsempty
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[black]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\setbeamertemplate{caption}[numbered]
+\usepackage{hyperref} 
+\usepackage{bbm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{dsfont}
+\def\R{{\mathbb R}}  %%
+\def\E{{\mathbb E}}  %
+\def\N{{\mathbb N}}  %%
+\def\bx{\boldsymbol{x}}
+\def\bM{\boldsymbol{M}}
+\def\ba{\boldsymbol{a}}
+\def\be{\boldsymbol{e}}
+\def\bI{\boldsymbol{I}}
+\def\bE{\boldsymbol{E}}
+\def\bc{\boldsymbol{c}}
+
+
+\lstset{basicstyle=\tiny\ttfamily,
+	numbers=left,
+	breaklines=true,
+	language=R,
+}
+\newcommand{\Rcode}[1]{\textcolor{blue}{\small \textrm{#1}}}
+\newcommand{\Rout}[1]{\textcolor{green}{\small \textrm{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+
+
+
+
+\title{第8讲: 经验费率 1}
+\author{高光远}
+\institute{中国人民大学~统计学院}
+\date{}
+\begin{document}
+%%title frame
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{主要内容}
+	\tableofcontents
+\end{frame}
+
+%%table of contents
+%\AtBeginSection[]
+%{
+%	\begin{frame}{}
+%		\tableofcontents[currentsection]
+%	\end{frame}
+%}
+
+
+
+%%normal frame
+\section{有限波动信度模型}
+\begin{frame}
+\begin{itemize}
+\item 依据个体风险的经验索赔厘定其费率称为\blue{经验费率厘定}.
+\item 根据\blue{大数定律}, 当个体风险中的风险单位数足够大时, 经验索赔趋于稳定.
+\item 一个被保险人的索赔很难预测, 保险公司通过承保\blue{大量的风险单位数}, 使得风险集合的索赔可以相对准确地预测. 
+\item 如果个体风险的风险单位数不够多, 就难以通过\blue{经验索赔}获得稳定的索赔预测.
+\item 在这种情况下, 我们考虑寻求\blue{其他相关数据}, 与个体风险的经验索赔结合, 进而提高预测的准确性.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item \red{信度模型}用来量化个体经验索赔的\blue{可信度}, 以及研究如何利用其他相关数据构造\blue{信度补项}.
+\item 信度模型一般可以分为: \red{有限波动信度模型(经典信度模型)}, \red{B\"uhlmann信度模型}和贝叶斯信度模型.
+\item \blue{用$N$表示索赔次数,  $\lambda$表示索赔频率, 一个风险单位索赔次数的方差为$\sigma^2_f$}. 在泊松分布下, $\lambda=\sigma^2_f$.
+\item \blue{用$X_i$表示第$i$次的索赔金额, $\E(X_i)=\xi$表示索赔强度, 记$\sigma^2_X=\text{Var}(X_i)$}.
+\item \blue{用$m$表示风险单位数, $P$表示(经验)纯保费率, $$P=\frac{\sum_{i=1}^N X_i}{m}$$}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item 有限波动信度模型英文为\blue{Limited fluctuation credibility}.
+\item 在有限波动信度模型中, 依据自身损失的\blue{波动性}来确定自身经验损失的\red{信度因子$Z$}, 然后把信度因子作为\blue{权重}, \blue{最终预测结果}为自身经验损失和相关损失的\blue{加权平均}:
+\begin{equation}
+\text{估计值}=Z\times\text{自身经验损失}+(1-Z)\times\text{相关损失}
+\end{equation}
+\item \red{完全可信度标准}:
+当个体损失的波动性小到什么程度时, 我们认为未来损失\blue{完全}可以根据个体经验损失进行预测.
+\end{itemize}
+\end{frame}
+
+\subsection{索赔频率的完全可信度}
+\begin{frame}
+\blue{经验索赔频率$N/m$}的期望和方差分别为\begin{equation}\label{frequency}\E(N/m)=\lambda, \text{Var}(N/m)=\sigma_f^2/{m}.\end{equation} $N/m$在$\lambda$附近的一个\blue{很小区间}$[\lambda-r\lambda, \lambda+r\lambda]$上波动的\blue{概率}为
+\begin{equation}\label{freq_1}p=\Pr(\lambda-r\lambda\leq N/m \leq \lambda+r\lambda)\end{equation}
+当$m$足够大时,经验索赔频率近似为\textbf{正态分布}, $$\frac{N/m-\lambda}{\sigma_f/\sqrt{m}}~\dot{\sim}~ \text{N}(0,1).$$
+\end{frame}
+
+\begin{frame}
+式\eqref{freq_1}可以转化为
+$$p=\Pr\left(-\frac{rm\lambda}{\sqrt{m}\sigma_f}\leq \frac{N/m-\lambda}{\sigma_f/\sqrt{m}} \leq \frac{rm\lambda}{\sqrt{m}\sigma_f}\right).$$
+进而得到,
+$$\frac{rm\lambda}{\sqrt{m}\sigma_f}=z_{(p+1)/2}$$
+我们要求在此区间的\blue{概率较大}, $p\geq1-\alpha$, 则可得到
+\begin{equation}\label{freq}
+m\lambda \geq\left(\frac{z_{1-\alpha/2}}{r}\right)^2\frac{\sigma^2_f}{\lambda}
+\end{equation}
+即
+\begin{equation}\E(N)\geq\left(\frac{z_{1-\alpha/2}}{r}\right)^2\frac{\sigma^2_f}{\lambda}
+\end{equation}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item 上式说明, 要求经验索赔频率以不小于$1-\alpha$的概率在其期望附近波动时, 索赔次数的期望\blue{最小}应为
+\begin{equation}\label{full1}
+\left(\frac{z_{1-\alpha/2}}{r}\right)^2\frac{\sigma^2_f}{\lambda}.
+\end{equation}
+\item 式\eqref{full1}称为索赔频率的\red{完全可信度标准}.
+教材表5-1给出了在\blue{泊松}假设下, 不同$\alpha$和$r$对应的索赔频率的完全可信度标准.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item 随着$\alpha$的减小(即以更大的概率在期望附近波动), 要求的索赔次数期望增大;  随着$r$的减小(即在更小的区间内波动), 要求的索赔次数期望越大. 
+\item 实际中常选取$\alpha=10\%$, $r=5\%$, 其完全可信度标准为\red{1082}.
+\item 对于过\blue{离散泊松和负二项}分布, 完全可信度标准较大; 对于\blue{欠离散泊松和二项}分布, 完全可信度标准较小.
+\item 完全可信度标准也可以通过\blue{风险单位数}确定, 即式\eqref{freq}可以变形为
+$$m \geq\left(\frac{z_{1-\alpha/2}}{r}\right)^2\frac{\sigma^2_f}{\lambda^2}$$
+\end{itemize}
+\end{frame}
+
+
+
+\subsection{索赔强度的完全可信度}
+\begin{frame}
+假设发生了$N$次索赔, \blue{经验索赔强度}为
+$$\bar{X}=\frac{X_1+\cdots+X_N}{N}.$$
+方差为\begin{equation}\label{severity}\sigma^2_X/N.\end{equation}经验索赔强度在其期望附近\blue{很小的一个区间}波动的概率为
+$$p=\Pr\left(\xi-r\xi \leq \bar{X} \leq \xi+r\xi\right).$$
+根据\blue{中心极限定理}, 当$N$足够大时, $\bar{X}$近似服从正态分布.  
+\end{frame}
+
+\begin{frame}
+要求$p$不小$1-\alpha$, 则应有
+$$\frac{r\xi\sqrt{N}}{\sigma_X}\geq Z_{1-\alpha/2}.$$
+索赔强度的\blue{完全可信度标准}为:
+$$N\geq \left(\frac{Z_{1-\alpha/2}}{r}\right)^2\left(\frac{\sigma_X}{\xi}\right)^2$$
+注: $\sigma_X/\xi$为索赔金额的\blue{变异系数}.
+\end{frame}
+
+\subsection{纯保费率的完全可信度}
+\begin{frame}
+\blue{经验纯保费率}为
+$$P=\frac{\sum_{i=1}^N X_i}{m}$$
+$P$的期望为$\mu_P=\lambda\xi$, 方差为
+\begin{equation}\label{pure}
+\begin{aligned}
+\sigma^2_P=\text{Var}(P)&=\E_N\left[\text{Var}_P(P|N)\right]+\text{Var}_N\left[\E_P(P|N)\right]\\&=\E_N\left[\frac{N\sigma^2_X}{m^2}\right]+\text{Var}_N\left[\frac{\xi N}{m}\right]\\
+&=\frac{\lambda\sigma^2_X+\xi^2\sigma^2_f}{m}
+\end{aligned}
+\end{equation}
+\end{frame}
+
+\begin{frame}
+\blue{同理}, 
+$$p=\Pr(\mu_P-r\mu_P\le P \le\mu_P+r\mu_P)=\Pr\left(-\frac{r\mu_P}{\sigma_P}\le \frac{P-\mu_P}{\sigma_P} \le \frac{r\mu_P}{\sigma_P}\right)$$
+要求$p\geq1-\alpha$, 可以证明
+$$m\lambda\geq\left(\frac{z_{1-\alpha/2}}{r}\right)^2\left[\frac{\sigma^2_f}{\lambda}+\left(\frac{\sigma_X}{\xi}\right)^2\right]$$
+所以, \blue{纯保费率的完全可信度标准}为索赔频率的完全可信度标准和索赔强度的完全可信度标准\blue{之和}.
+\end{frame}
+
+\subsection{部分可信度}
+\begin{frame}
+\begin{itemize}
+\item 假设某个体风险的索赔次数\blue{刚好}满足完全可信度标准, 计索赔次数为$N^F$, 风险单位数为$m^F$, 根据信度模型, 预测的索赔频率为
+$$\hat{\lambda}^F=1\times\frac{N^F}{m^F}+0\times c,$$
+其中$c$为信度补项.
+\item 假设另一个个体风险的索赔次数\blue{不满足}完全可信度标准, 计索赔次数为$N$, 风险单位数为$m$, 根据信度模型, 预测的索赔频率为
+$$\hat{\lambda}=Z\times\frac{N}{m}+(1-Z)\times c,$$
+其中$c$为信度补项.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+
+令$\hat{\lambda}^F$和$\hat{\lambda}$的方差相等, 则
+$$\text{Var}\left(\frac{N^F}{m^F}\right)=\text{Var}\left(\frac{ZN}{m}\right)$$
+即
+$$\frac{m^F\sigma^2_f}{(m^F)^2}=\frac{Z^2m\sigma^2_f}{m^2}$$
+所以
+$$Z=\sqrt{\frac{m}{m^F}}=\sqrt{\frac{m\lambda}{m^F\lambda}}$$
+\end{frame}
+
+\section*{}
+\begin{frame}
+\begin{itemize}
+\item 阅读教材5.1.
+\item 自测课后练习题.
+\end{itemize}
+\end{frame}
+\end{document}
