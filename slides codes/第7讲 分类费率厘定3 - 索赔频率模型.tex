@@ -1,0 +1,416 @@
+\documentclass[professionalfont]{beamer}
+\usepackage{newtxtext}
+\usepackage[heading = false, scheme = plain]{ctex}
+\mode<presentation>{\usetheme{Warsaw}}
+%\usecolortheme{dove}
+\setbeamertemplate{footline}{}
+\beamertemplatenavigationsymbolsempty
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[black]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\setbeamertemplate{caption}[numbered]
+\usepackage{hyperref} 
+\usepackage{bbm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{dsfont}
+\def\R{{\mathbb R}}  %%
+\def\E{{\mathbb E}}  %
+\def\N{{\mathbb N}}  %%
+\def\bx{\boldsymbol{x}}
+
+\lstset{basicstyle=\tiny\ttfamily,
+	numbers=left,
+	breaklines=true,
+	language=R,
+}
+\newcommand{\Rcode}[1]{\textcolor{blue}{\small \textrm{#1}}}
+\newcommand{\Rout}[1]{\textcolor{green}{\small \textrm{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+
+
+
+
+\title{第7讲：分类费率厘定 3 - 索赔频率模型}
+\author{高光远}
+\institute{中国人民大学~统计学院}
+\date{}
+\begin{document}
+%%title frame
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{主要内容}
+	\tableofcontents
+\end{frame}
+
+%%table of contents
+%\AtBeginSection[]
+%{
+%	\begin{frame}{}
+%		\tableofcontents[currentsection]
+%	\end{frame}
+%}
+
+
+
+%%normal frame
+\section{泊松回归}
+\subsection{模型假设}
+\begin{frame}
+	\begin{itemize}
+	\item 假设索赔次数 $N$ 服从泊松分布, 索赔频率为 $\lambda$, 车年数为 $v$. 我们想引入不同风险集合的\textbf{结构性差异}, 进而更准确地估计不同风险集合的索赔频率. 
+	\item 根据费率因子, 被保险人被划分在不同的风险集合. 假设有一个 $d$ 维协变量空间(费率因子空间) $\bx=(x_1,\ldots,x_d)'\in \mathcal{X}$, 索赔频率回归方程 $\lambda(\cdot)$ 为一个映射(mapping):
+		$$\lambda: \mathcal{X}\rightarrow\R_+, \qquad \bx\mapsto\lambda=\lambda(\bx).$$
+	\item $N$的分布为
+		$$N\sim \text{Poi}(\lambda v)$$
+\item 定义\blue{平均索赔次数随机变量} $Y=N/v$.
+	\end{itemize}
+\end{frame}
+\begin{frame}{$N$的分布}
+	可以把泊松分布转化为指数型分布族形式:
+	\begin{equation}
+	\begin{aligned}
+	\Pr(N=k)&=\exp\left[-\lambda(\bx)v\right]\frac{(\lambda(\bx)v)^k}{k!}\\&=\exp\left[\frac{k\log(\lambda(\bx)v)-\lambda(\bx)v}{1}-\log k!\right]
+	\end{aligned}
+	\end{equation}
+	可知, $\theta=\log(\lambda(\bx)v), b(\theta)=\exp(\theta), c(k,\phi)=-\log k!, a(\phi)=1$.
+
+\end{frame}
+\begin{frame}{$Y$的分布}
+	可以对平均索赔次数随机变量 $Y=N/v$建模, 其分布也为EDF
+	\begin{equation}
+	\begin{aligned}
+	\Pr(Y=k/v)&=\Pr(N=k)\\&=\exp\left[-\lambda(\bx)v\right]\frac{(\lambda(\bx)v)^k}{k!}\\&=\exp\left[\frac{\frac{k}{v}\log\lambda(\bx)-\lambda(\bx)}{\frac{1}{v}}-\log k!+k\log v\right]
+	\end{aligned}
+	\end{equation}
+	可知 $\theta=\log\lambda(\bx), b(\theta)=\exp(\theta), c(k,\phi)=-\log k!+k\log v$, $a(\phi)=1/v.$ 	注意: \textbf{$Y$不服从泊松分布}.
+	
+	~
+	
+	\textbf{因为 $c(k,\phi)$ 对 $\beta$ 的估计没有影响, 在求 $\beta$ 的极大似然估计时, 可以假设 $Y$ 服从期望为 $\lambda(\bx)$ 的泊松分布, 其权重为 $v$.}
+\end{frame}
+\subsection{参数估计}
+\begin{frame}
+定义如下数学符号
+\begin{equation*}
+\begin{aligned}
+\mathcal{D}&=\{(N_1,\bx_1,v_1),\ldots,(N_n,\bx_n,v_n)\}\\
+\beta&=(\beta_0,\ldots,\beta_d)'\in\R^{d+1}\\
+\log \lambda(\bx)&=\beta_0+\beta_1x_1+\cdots+\beta_dx_d=\langle\beta,\bx\rangle\\
+\boldsymbol{N}&=(N_1,\ldots,N_n)'\\
+X&=(x_{il})_{i=1:n,l=0:d}\in\R^{n\times(d+1)}\\
+V&=\text{diag}(v_1,\ldots,v_n)
+\end{aligned}
+\end{equation*}
+极大似然估计$\hat{\beta}$为下面方程的解
+\begin{equation}X^TV\exp\{X\beta\}=X^T\boldsymbol{N}\end{equation}
+可通过Newton-Raphson算法, Fisher's scoring方法, IRLS方法计算上述方程的解$\hat{\beta}$.
+\end{frame}
+\subsection{预测和检验}
+\begin{frame}{预测}
+	\begin{itemize}
+		\item 	索赔频率可\textbf{估计}为:$$\hat{\lambda}(\bx)=\exp\langle\hat{\beta},\bx\rangle$$
+		\item $\hat{\lambda}(\bx)$的估计误差为
+		\begin{equation}\label{estimation_error}
+		\text{Var}(\hat{\lambda}(\bx))\approx\hat{\lambda}(\bx)^2\text{Var}(\hat{\eta})=\hat{\lambda}(\bx)^2\bx^T\text{Var}(\hat{\beta})\bx
+		\end{equation}
+	\item 平均索赔次数$Y=N/v$ 可以通过 $\hat{\lambda}$ 进行\textbf{预测}:$$\hat{Y}=\hat{\E}(Y)=\hat{\lambda}(\bx).$$ 
+	\item 假设偏差为零, 则预测均方误差为
+	\begin{equation}\label{MSEP2}
+	\begin{aligned}
+	\E\left[\left(Y_i-\hat{Y}_i\right)^2\right]&\approx\text{Var}(\hat{Y}_i)+\text{Var}(Y_i)\\
+	&\approx\hat{Y}_i^2\bx_i^T\text{Var}(\hat{\beta})\bx_i+\frac{\hat{Y}_i}{v}
+	\end{aligned}
+	\end{equation}
+	\item 可以看到, \textbf{过程方差和风险单位数成反比}.
+	\end{itemize}
+ \end{frame}
+\begin{frame}{残差}
+	可以通过残差图评估\textbf{分布假设}和\textbf{连接函数假设}.
+	\begin{itemize}
+	\item	Pearson残差定义为
+	$${\epsilon}_i^P=\frac{N_i-\hat{\lambda}(\bx_i)v_i}{\sqrt{\hat{\lambda}(\bx_i)v_i}}$$
+	\item Deviance残差定义为
+	$${\epsilon}_i^D=\text{sign}\left(N_i-\hat{\lambda}(\bx_i)v_i\right)\sqrt{2N_i\left[\frac{\hat{\lambda}(\bx_i)v_i}{N_i}-1-\log\left(\frac{\hat{\lambda}(\bx_i)v_i}{N_i}\right)\right]}$$
+	如果 $N_i=0$, 等式右边为 $\text{sign}\left(N_i-\hat{\lambda}(\bx_i)v_i\right)\sqrt{2\hat{\lambda}(\bx_i)v_i}$.
+	\end{itemize}
+\end{frame}
+\begin{frame}{偏差统计量}
+	\begin{equation}
+	\begin{aligned}
+	D(\beta_{full},\hat{\beta})&=D^*(\beta_{full},\hat{\beta})\\&=\sum_{i=1}^n2N_i\left[\frac{\hat{\lambda}(\bx_i)v_i}{N_i}-1-\log\left(\frac{\hat{\lambda}(\bx_i)v_i}{N_i}\right)\right]\\
+	&=\sum_{i=1}^n\left(\epsilon^D_i\right)^2
+	\end{aligned}
+	\end{equation}
+	如果 $N_i=0$, 等式右边的第 $i$ 项为 $2\hat{\lambda}(\bx_i)v_i$.
+\end{frame}
+\begin{frame}{离散系数}
+	泊松模型中, 离散系数为常数1. 这里需要检验因变量是否存在\blue{过离散(over-dispersion)}或者\blue{欠离散(under-dispersion)}.
+	\begin{equation}
+		\begin{aligned}
+	\hat{\phi}_P&=\frac{1}{n-d-1}\sum_{i=1}^n\left(\epsilon^P_i\right)^2\\
+	\hat{\phi}_D&=\frac{1}{n-d-1}\sum_{i=1}^n\left(\epsilon^D_i\right)^2
+	\end{aligned}
+	\end{equation}
+	$\hat{\phi}_P$ 和 $\hat{\phi}_D$ 应该接近于1.
+\end{frame}
+\section{实例}
+\begin{frame}{数据}
+	使用第二周给出的保单数据库和理赔数据库, 这里只研究\textbf{交强险}的索赔次数.
+	
+	~
+	
+	考虑两个费率因子: \textbf{性别和年龄}. 其中, 性别为分类变量, 年龄为连续型变量. 拟解决如下几个问题:
+	\begin{enumerate}
+		\item 性别和年龄的交互作用(interaction effect).
+		\item 对 $N$ 建模和对 $Y=N/v$ 建模的等价性.
+		\item Deviance residuals VS Deviance statistics 
+		\item 离散系数是否接近1.
+		\item 假设检验: 性别对索赔频率没有显著的影响.
+		\item 对30岁男性驾驶员的平均索赔次数预测.
+	\end{enumerate}
+	
+\end{frame}
+\begin{frame}[fragile]{不考虑性别和年龄的交互作用}
+	\begin{lstlisting}
+> ctp_poi<-glm(Counts~SEX+AGE,offset=log(YEARS),family=poisson(link="log"),data=data_ctp)
+> summary(ctp_poi)
+
+Call:
+glm(formula = Counts ~ SEX + AGE, family = poisson(link = "log"), 
+data = data_ctp, offset = log(YEARS))
+
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-0.7343  -0.6896  -0.6576  -0.4204   4.6060  
+
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.244963   0.121382 -10.257   <2e-16 ***
+SEX2         0.047473   0.062438   0.760   0.4471    
+AGE         -0.005971   0.003077  -1.941   0.0523 .  
+---
+Signif. codes:  0 *** 0.001 ** 0.01 * 0.05 . 0.1   1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+Null deviance: 4156.9  on 5840  degrees of freedom
+Residual deviance: 4152.2  on 5838  degrees of freedom
+AIC: 6316.5
+
+Number of Fisher Scoring iterations: 6
+\end{lstlisting}
+	
+注: 使用 offset 引入系数固定为1的协变量.
+\end{frame}
+
+\begin{frame}[fragile]{考虑性别和年龄的交互作用}
+	\begin{lstlisting}
+> ctp_poi2<-glm(Counts~SEX*AGE,offset=log(YEARS),family=poisson(link="log"),data=data_ctp)
+> summary(ctp_poi2)
+
+Call:
+glm(formula = Counts ~ SEX * AGE, family = poisson(link = "log"), 
+data = data_ctp, offset = log(YEARS))
+
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-0.7349  -0.6895  -0.6577  -0.4206   4.6060  
+
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.246347   0.140254  -8.886   <2e-16 ***
+SEX2         0.052478   0.261499   0.201   0.8409    
+AGE         -0.005934   0.003595  -1.651   0.0988 .  
+SEX2:AGE    -0.000137   0.006952  -0.020   0.9843    
+---
+Signif. codes:  0 *** 0.001 ** 0.01 * 0.05 . 0.1   1
+
+(Dispersion parameter for poisson family taken to be 1)
+
+Null deviance: 4156.9  on 5840  degrees of freedom
+Residual deviance: 4152.2  on 5837  degrees of freedom
+AIC: 6318.5
+
+Number of Fisher Scoring iterations: 6
+\end{lstlisting}
+注：使用 * 考虑两个协变量的交互作用.
+\end{frame}
+
+\begin{frame}{考虑性别和年龄的交互作用}
+	\begin{itemize}
+		\item 不考虑交互作用. $\log \lambda$ 为\textbf{截距不同, 斜率相同的两条线}:
+		\begin{equation}
+		\log\lambda_i=\beta_0+\beta_1\mathds{1}_{\text{SEX}_i=\text{Female}}+\beta_2\text{AGE}_i
+		\end{equation}
+		男性: $\log \hat{\lambda}=-1.2450-0.0060\times$AGE\\
+		女性: $\log \hat{\lambda}=-1.1975-0.0060\times$AGE\\
+		
+		\item 考虑交互作用. $\log \lambda$ 为\textbf{截距不同, 斜率不同的两条线}:
+		\begin{equation}
+		\log\lambda_i=\beta_0+\beta_1\mathds{1}_{\text{SEX}_i=\text{Female}}+\beta_2\text{AGE}_i+\beta_3\mathds{1}_{\text{SEX}_i=\text{Female}}\times\text{AGE}_i
+		\end{equation}
+		男性: $\log \hat{\lambda}=-1.2463-0.0059\times$AGE\\
+		女性: $\log \hat{\lambda}=-1.1938-0.0061\times$AGE\\
+		\item 这里的交互作用指, 年龄对不同性别驾驶人的索赔频率的影响不同. 女驾驶员的索赔频率对年龄更加敏感(但不统计显著).
+		\item 由正态检验可知, 无法拒绝 $H_0: \beta_3=0$. 
+	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{对 $N$ 建模和对 $Y=N/v$ 建模的等价性}
+\begin{lstlisting}
+> newY<-data_ctp$Counts/data_ctp$YEARS
+> summary(glm(newY~SEX+AGE,weights =YEARS,family=poisson(link="log"),data=data_ctp))
+
+Call:
+glm(formula = newY ~ SEX + AGE, family = poisson(link = "log"), 
+    data = data_ctp, weights = YEARS)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-0.7343  -0.6896  -0.6576  -0.4204   4.6060  
+
+Coefficients:
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.244963   0.121382 -10.257   <2e-16 ***
+SEX2         0.047473   0.062438   0.760   0.4471    
+AGE         -0.005971   0.003077  -1.941   0.0523 .  
+---
+Signif. codes:  0 *** 0.001 ** 0.01 * 0.05 . 0.1   1 
+
+(Dispersion parameter for poisson family taken to be 1)
+
+    Null deviance: 4156.9  on 5840  degrees of freedom
+Residual deviance: 4152.2  on 5838  degrees of freedom
+AIC: Inf
+
+Number of Fisher Scoring iterations: 6
+\end{lstlisting}	
+注：对平均索赔次数建模, 需要引入weights=风险单位数.
+\end{frame}
+\begin{frame}[fragile]{Deviance residuals VS Deviance statistics }
+	\begin{equation}
+	D(\beta_{full},\hat{\beta})=D^*(\beta_{full},\hat{\beta})=\sum_{i=1}^n\left(\epsilon^D_i\right)^2
+	\end{equation}
+	\begin{lstlisting}
+> deviance(ctp_poi)
+[1] 4152.185
+> sum(residuals.glm(ctp_poi,type="deviance")^2)
+[1] 4152.185
+\end{lstlisting}
+注：两种残差, type=``deviance'', type=``pearson''.
+\end{frame}
+\begin{frame}[fragile]{离散系数是否接近1}
+\begin{lstlisting}
+> deviance(ctp_poi)/(nrow(data_ctp)-length(ctp_poi$coefficients))
+[1] 0.7112342
+> sum(residuals.glm(ctp_poi,type="pearson")^2)/(nrow(data_ctp)-length(ctp_poi$coefficients))
+[1] 1.161362
+> summary(glm(Counts~SEX+AGE,offset=log(YEARS),family=quasipoisson(link="log"),data=data_ctp))$dispersion
+[1] 1.161362
+\end{lstlisting}
+$$\hat{\phi}_D=0.71, \hat{\phi}_P=1.16.$$
+注: 使用 \texttt{family=quasipoisson} 可以估计离散参数.	
+\end{frame}
+
+\begin{frame}[fragile]{假设检验: 性别对索赔频率没有显著的影响}
+\begin{lstlisting}
+> summary(ctp_poi)
+Call:
+glm(formula = Counts ~ SEX + AGE, family = poisson(link = "log"), 
+data = data_ctp, offset = log(YEARS))
+
+Deviance Residuals: 
+Min       1Q   Median       3Q      Max  
+-0.7343  -0.6896  -0.6576  -0.4204   4.6060  
+
+Coefficients:
+Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.244963   0.121382 -10.257   <2e-16 ***
+SEX2         0.047473   0.062438   0.760   0.4471    
+AGE         -0.005971   0.003077  -1.941   0.0523 .  
+---
+Signif. codes:  0 *** 0.001 ** 0.01 * 0.05 . 0.1   1
+(Dispersion parameter for poisson family taken to be 1)
+Null deviance: 4156.9  on 5840  degrees of freedom
+Residual deviance: 4152.2  on 5838  degrees of freedom
+AIC: 6316.5
+
+Number of Fisher Scoring iterations: 6
+> test_stat<-deviance(glm(Counts~AGE,offset=log(YEARS),family=poisson(link="log"),data=data_ctp))-deviance(ctp_poi)
+> test_stat
+[1] 0.574698
+> qchisq(0.95, 1)
+[1] 3.841459
+> 1-pchisq(test_stat,df=1)
+[1] 0.4483981
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{假设检验: 性别对索赔频率没有显著的影响}
+	完整模型为: 
+		\begin{equation*}
+		\log\lambda_i=\beta_0+\beta_1\times\mathds{1}_{\text{SEX}_i=\text{Female}}+\beta_2\times\text{AGE}_i
+		\end{equation*}
+	在$H_0: \beta_1=0$下的模型为
+$$\log\lambda_i=\beta_0+\beta_1\times\text{AGE}_i$$
+	\textbf{正态检验}: 从 \texttt{ctp\_poi} 模型的 \texttt{summary} 表中可知, 检验统计量为 0.7600, $p$ 值为 0.4471. 所以不能拒绝$H_0$, 性别对索赔频率没有显著的影响.\\
+	\textbf{似然比检验}: 计算检验统计量为 0.5747. $\chi_1(95\%)=3.8415$, $p$ 值为 0.4483. 所以不能拒绝$H_0$, 性别对索赔频率没有显著的影响.
+\end{frame}
+\begin{frame}[fragile]{对30岁男性驾驶员的平均索赔次数预测}
+\begin{lstlisting}
+> link_30<-predict(ctp_poi,newdata = data.frame(SEX="1",AGE=30,YEARS=1),type="link",se.fit = T) # linear prediction of log lambda
+> response_30<-predict(ctp_poi,newdata = data.frame(SEX="1",AGE=30,YEARS=1),type="response",se.fit = T) # prediction of lambda
+> exp(link_30$fit); response_30$fit; link_30$se.fit # exp (link) = response
+        1 
+0.2407267 
+        1 
+0.2407267 
+[1] 0.04226038
+> link_30$se.fit*response_30$fit; response_30$se.fit # the estimation  error
+        1 
+0.0101732 
+        1 
+0.0101732 
+> sqrt(response_30$fit) # the process error
+        1 
+0.4906391 
+> sqrt(response_30$se.fit^2+response_30$fit) # the MSEP for 1 risk exposure
+        1 
+0.4907445 
+> sqrt(response_30$se.fit^2+response_30$fit/100) # the MSEP for 100 risk exposure
+        1 
+0.0501075 
+\end{lstlisting}
+\end{frame}
+\begin{frame}{对30岁男性驾驶员的平均索赔次数预测}
+$$\hat{Y}=0.2407, \text{Var}(\hat{\eta})=0.0423.$$
+\begin{itemize}
+\item  对于\textbf{一位30岁男性驾驶员}: 可知风险单位数为1, 估计标准差为0.0102, 过程标准差为0.4906. 预测均方误差的平方根为0.4907, 主要来源于\textbf{过程标准差}.\\
+\item 对于\textbf{含有一百位30岁男性驾驶员的风险集合}: 可知风险单位数为100, 估计标准差为0.0102, 过程标准差为\textbf{0.0491}. 预测均方误差的平方根为0.0501.
+\end{itemize}
+\end{frame}
+
+\section*{}
+\begin{frame}
+	\begin{enumerate}
+		\item 大作业二
+\item 选做：证明式 \eqref{estimation_error} 和式  \eqref{MSEP2}.
+
+	\end{enumerate}
+\end{frame}
+
+\end{document}
