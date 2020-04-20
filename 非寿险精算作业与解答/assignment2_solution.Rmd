@@ -1,0 +1,114 @@
+# Assignment 2 solution
+```{r}
+# Prepare the data
+freq_data<-read.csv("./Data/freq_data.csv",sep=",",header=T,fileEncoding="GB18030")[,-1]
+freq_data[1:2,]
+freq_data<-data.frame(freq_data,AGE_Group=rep(NA,nrow(freq_data)),USE_Group=rep(NA,nrow(freq_data)))
+for (i in 1:nrow(freq_data)){
+  age_temp<-freq_data$AGE[i]
+  use_temp<-freq_data$USEYEARS[i]
+  if (age_temp>=18&age_temp<=24) freq_data$AGE_Group[i]<-"A"
+  else if(age_temp>=25&age_temp<=34) freq_data$AGE_Group[i]<-"B"
+  else if(age_temp>=35&age_temp<=44) freq_data$AGE_Group[i]<-"C"
+  else if(age_temp>=45&age_temp<=54) freq_data$AGE_Group[i]<-"D"
+  else if(age_temp>=55&age_temp<=64) freq_data$AGE_Group[i]<-"E"
+  else freq_data$AGE_Group[i]<-"F"
+  
+  if (use_temp>=0&use_temp<=1) freq_data$USE_Group[i]<-"A"
+  else if(use_temp>=2&use_temp<=4) freq_data$USE_Group[i]<-"B"
+  else if(use_temp>=5&use_temp<=8) freq_data$USE_Group[i]<-"C"
+  else freq_data$USE_Group[i]<-"D"
+}
+data_bd<-freq_data[freq_data$KINDCODE=="车损险",]
+
+# Multiplicative model without interaction term
+bd_poi<-glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=poisson(link="log"),data=data_bd)
+
+# Estimated coefficients
+summary(bd_poi)
+
+# Dispersion
+sum(residuals.glm(bd_poi,type="pearson")^2)/(nrow(data_bd)-length(bd_poi$coefficients))
+summary(glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=quasipoisson(link="log"),data=data_bd))$dispersion
+
+# Hypothesis testing: AGE_Group E=F
+data_bd_h0<-data_bd
+data_bd_h0$AGE_Group[data_bd_h0$AGE_Group=="F"]<-"E"
+deviance(glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=poisson(link="log"),data=data_bd_h0))-deviance(bd_poi)
+qchisq(0.95, 1)
+
+# Hypothesis testing: USE_Group A=B
+data_bd_h0<-data_bd
+data_bd_h0$USE_Group[data_bd_h0$USE_Group=="B"]<-"A"
+deviance(glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=poisson(link="log"),data=data_bd_h0))-deviance(bd_poi)
+1-pchisq(8.38504,1)
+qchisq(0.95, 1)
+
+# Prediction (100 years-at-risk portfolio)
+newpolicy=data.frame(AGE_Group="B",USE_Group="A",YEARS=1)
+link<-predict(bd_poi,newdata = newpolicy,type="link", se.fit = T)
+response<-predict(bd_poi,newdata = newpolicy,type="response", se.fit = T)
+exp(link$fit); response$fit; link$se.fit*response$fit; response$se.fit
+
+response$se.fit
+sqrt(response$fit/100) 
+response$se.fit^2+response$fit/100
+response$se.fit^2+response$fit
+```
+
+# Using aggregated data
+```{r}
+earned<-aggregate(data_bd$YEARS,by=list(data_bd$AGE_Group,data_bd$USE_Group),FUN=sum)
+counts<-aggregate(data_bd$Counts,by=list(data_bd$AGE_Group,data_bd$USE_Group),FUN=sum)
+newdata<-data.frame(AGE_Group=earned$Group.1,USE_Group=earned$Group.2,YEARS=earned$x,Counts=counts$x)
+
+# The equivalence to the micro data
+bd_poi2<-glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=poisson(link="log"),data=newdata)
+summary(bd_poi2)
+summary(glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=quasipoisson(link="log"),data=newdata))$dispersion
+
+
+summary(bd_poi)
+
+# Hypothesis testing: AGE_Group E=F
+newdata2<-newdata
+newdata2$AGE_Group[newdata2$AGE_Group=="F"]<-"E"
+deviance(glm(Counts~AGE_Group+USE_Group,offset=log(YEARS),family=poisson(link="log"),data=newdata2))-deviance(bd_poi2)
+qchisq(0.95, 1)
+
+# Prediction (100 years-at-risk portfolio)
+link2<-predict(bd_poi2,newdata = newpolicy,type="link", se.fit = T)
+response2<-predict(bd_poi2,newdata = newpolicy,type="response", se.fit = T)
+exp(link2$fit); response2$fit; link2$se.fit*response2$fit; response2$se.fit
+
+response2$se.fit
+sqrt(response2$fit/100) 
+sqrt(response2$se.fit^2+response2$fit/100)
+```
+
+# PPT code
+```{r}
+data_ctp<-fread("./Data/data_ctp.csv")
+names(data_ctp)
+
+ctp_poi<-glm(Counts~SEX+AGE,offset=log(YEARS),family=poisson(link="log"),data=data_ctp)
+summary(ctp_poi)
+ctp_poi2<-glm(Counts~SEX*AGE,offset=log(YEARS),family=poisson(link="log"),data=data_ctp)
+summary(ctp_poi2)
+
+deviance(ctp_poi2)
+deviance(ctp_poi)
+sum(residuals.glm(ctp_poi,type="deviance")^2)
+
+deviance(ctp_poi)/(nrow(data_ctp)-length(ctp_poi$coefficients))
+sum(residuals.glm(ctp_poi,type="pearson")^2)/(nrow(data_ctp)-length(ctp_poi$coefficients))
+summary(glm(Counts~SEX+AGE,offset=log(YEARS),family=quasipoisson(link="log"),data=data_ctp))$dispersion
+
+newY<-data_ctp$Counts/data_ctp$YEARS
+summary(glm(newY~SEX+AGE,weights =YEARS,family=poisson(link="log"),data=data_ctp))
+
+test_stat<-deviance(glm(Counts~AGE,offset=log(YEARS),family=poisson(link="log"),data=data_ctp))-deviance(ctp_poi)
+test_stat
+qchisq(0.95, 1)
+1-pchisq(test_stat,df=1)
+```
