@@ -1,0 +1,205 @@
+\documentclass[professionalfont]{beamer}
+\usepackage{newtxtext}
+\usepackage[heading = false, scheme = plain]{ctex}
+\mode<presentation>{\usetheme{Warsaw}}
+%\usecolortheme{dove}
+\setbeamertemplate{footline}{}
+\beamertemplatenavigationsymbolsempty
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[black]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\setbeamertemplate{caption}[numbered]
+\usepackage{hyperref} 
+\usepackage{bbm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{xcolor}
+\def\R{{\mathbb R}}  %%
+\def\E{{\mathbb E}}  %
+
+\lstset{basicstyle=\tiny\ttfamily,
+	numbers=left,
+	escapeinside=||
+}
+\newcommand{\Rcode}[1]{\textcolor{blue}{\small \textrm{#1}}}
+\newcommand{\Rout}[1]{\textcolor{green}{\small \textrm{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textbf{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+
+\title{第4讲：总平均费率厘定(overall ratemaking)}
+\author{高光远}
+\institute{中国人民大学~统计学院}
+\date{}
+\begin{document}
+%%title frame
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{主要内容}
+	\tableofcontents
+\end{frame}
+
+%%table of contents
+
+
+%%normal frame
+\section{纯保费}
+\begin{frame}
+
+\begin{block}{有限期望值(limited expected value)}
+	Consider a positive random variable $X\in \R^{+}$, with pdf $f(x)$ and cdf $F(x)$, for $d>0$, the \red{limited expected value} is defined as
+	\begin{equation}
+	\E(X\wedge d)=\int_{0}^{d}xf(x)dx+d\left[1-F(d)\right]
+	\end{equation}
+\end{block}
+\end{frame}
+\subsection{免赔额}
+\begin{frame}{对索赔次数的影响}
+	\begin{itemize}
+		\item 不计免赔时, 保单持有人提出索赔的概率为
+		\green{$$\Pr(\text{发生损失})$$}
+		\item 假设免赔额为$d$, 保单持有人提出索赔的概率为
+		\green{$$\Pr(\text{发生损失})\times\Pr(X>d)$$}
+		\item 已知发生损失, 保单持有人提出索赔的\blue{条件概率}为
+		\green{$$v=\Pr(X>d)=1-F_X(d)$$}
+	\end{itemize}
+\end{frame}
+\begin{frame}{对索赔次数的影响}
+	\begin{itemize}
+		\item 	假设某保单发生了$N$次损失, 则累计索赔次数为
+	$$N^*=\sum_{i=1}^{N}I_i$$
+	其中$I_i=1_\text{第i次损失引起索赔}=1_{x_i>d}$为\blue{指示函数}.\
+	\item 由风险模型的知识可知, $N^*$为一个复合分布, 其\blue{首分布}为损失次数$N$的分布, 其\blue{次分布}为参数为$v$的伯努利分布. 可以证明$N^*$的\blue{概率母函数(pgf)}为
+	$$P_{N^*}(z)=P_{N}(P_I(z))=P_N(1+vz-v),$$
+	这里, $P_{N^*}(z), P_{N}(z), P_I(z)$分别表示$N^*, N, I$的概率母函数.
+		\item 假设$N\sim \text{Poi}(\lambda)$, 则$P_{N^*}(z)=e^{v\lambda(z-1)}$. 即$N^*\sim \text{Poi}(v\lambda)$.
+	
+	\end{itemize}
+\end{frame}
+\begin{frame}{对索赔次数的影响}
+	\begin{itemize}
+	\item 假设$N$服从$(a,b,0)$或者$(a,b,1)$分布(见教材2.2损失次数模型), 则$N^*$和$N$同分布, 只是参数发生变化(见表3-15). 
+	\item $\E(N^*)=\E(N)\E(I)=v\E(N)=\left[1-F_X(d)\right]\E(N)$
+		\item 假设$N$的概率母函数为$P_1(P_2(z))$, 即$N$为一个复合分布, 则$P_{N^*}(z)=P_1(P_2(1+vz-v))$. 可知, $N^*$也为复合分布, 其首分布次分布跟随$N$的首分布次分布, 但次分布参数发生变化. (见例3-2, 3-3)
+	\end{itemize}
+\end{frame}
+\begin{frame}{对索赔金额的影响}
+	\begin{itemize}
+		\item 超额损失随机变量, \red{含零赔款(payments per loss)}服从\green{混合分布} 
+		$$\blue{Y^L=X-X\wedge d}$$
+		$$\Pr(Y^L=0)=\Pr(X\le d)=F_X(d)$$
+		$$F_{Y^L}(y)=F_X(y+d),y>0$$  $$f_{Y^L}(y)=f_X(y+d), y>0$$
+		\item \red{非零赔款(payment per payment)}服从\green{连续分布} $$\blue{Y^P=X-d|X>d}$$
+		$$F_{Y^P}(y)=\frac{F_X(y+d)-F_X(d)}{1-F_X(d)}$$
+		$$f_{Y^P}(y)=\frac{f_X(y+d)}{1-F_X(d)}$$
+	\end{itemize}
+\end{frame}
+\begin{frame}{对索赔金额的影响}
+\begin{itemize}
+	\item 期望公式
+\blue{$$\E(Y^L)=\E(X)-\E(X\wedge d)$$
+$$\E(Y^P)=\frac{\E(Y^L)}{1-F_X(d)}$$}
+\item 
+ 假设通货膨胀率为$r$, 免赔额不变则
+	$$\E(Y^L)=(1+r)\left[\E(X)-\E\left(X\wedge \frac{d}{1+r}\right)\right]$$
+	$$\E(Y^P)=\frac{\E(Y^L)}{1-F_X\left(\frac{d}{1+r}\right)}$$
+\end{itemize}
+\end{frame}
+\begin{frame}
+	
+{\center	Under deductible, the \red{pure premium(纯保费)} is \red{$$\E\left[\sum_{i=1}^{N}Y^L_i\right]=\E(N)\E(Y^L)=\E\left[\sum_{i=1}^{N^*}Y^P_i\right]=\E(N^*)\E(Y^P)$$}.}
+\end{frame}
+\subsection{赔偿限额}
+\begin{frame}
+	假设赔偿限额为$u$, $Y$表示应用赔偿限额$u$所生成的随机变量, 则\red{$Y=X\wedge u$}的cdf和pdf(混合分布)分别为
+	\begin{equation*}
+	F_Y(y)=
+	\begin{cases}
+	F_X(y), & y<u \\
+	1, & y= u
+	\end{cases}
+	\end{equation*}
+	\begin{equation*}
+	f_Y(y)=
+	\begin{cases}
+	f_X(y), & y<u \\
+	1-F_X(u), & y\geq u
+	\end{cases}
+	\end{equation*}
+\end{frame}
+\begin{frame}
+\begin{itemize}
+	\item	假设赔偿限额为$u$, 免赔额为$d$, 则含零赔款为$$Y^L=X\wedge(u+d)-X\wedge d,$$
+	非零赔款为$$Y^P=X\wedge(u+d)-X\wedge d|X>d.$$ 它们的期望分别为
+	\begin{align*}
+	 \E(Y^L)&=\E\left[X\wedge(u+d)\right]-\E(X\wedge d) \\
+	 \E(Y^P)&=\frac{\E(Y^L)}{1-F_X(d)}
+	\end{align*}
+	\item
+	假设通货膨胀率为$r$, 赔偿限额和免赔额不变,则
+	\begin{align*}
+	\E(Y^L)&=(1+r)\left[\E\left(X\wedge\frac{u+d}{1+r}\right)-\E\left(X\wedge \frac{d}{1+r}\right)\right] \\
+	\E(Y^P)&=\frac{\E(Y^L)}{1-F_X\left(\frac{d}{1+r}\right)}
+	\end{align*}
+\end{itemize}
+\end{frame}
+
+\section{总平均费率厘定}
+\begin{frame}
+	\begin{center}
+	纯费率(纯保费, pure premium)=索赔频率$\times$索赔强度 \gray{+ 理赔费用}\\
+	
+	~
+	
+	理赔费用 = ALAE + ULAE\\ 
+	
+	~
+	
+	承保费用 = 固定费用 + 变动费用(随保费变化)
+	\end{center}
+\end{frame}
+\subsection{纯保费法}
+\begin{frame}
+\red{基本保险方程(fundamental insurance equation)}\\
+
+~
+
+保费 (R) = \blue{赔款 + 理赔费用 (P)} + 承保费用 (F+$R\times V$) + 承保利润附加 ($R\times Q$)\\
+$$\red{R=\frac{P+F}{1-V-Q}}$$
+
+~
+
+其中, $R$表示新费率, $P$表示单位风险的赔款和理赔费用总和(纯保费), $F$表示单位风险的固定费用, $V$表示变动费用比率, $Q$表示利润附加比率.
+\end{frame}
+\subsection{赔付率法}
+\begin{frame}
+$$\red{A=\frac{R}{R_0}=\frac{P/R_0+F/R_0}{1-V-Q}}$$
+其中, $A$表示费率调整因子, $R_0$表示\green{当前费率}, $P/R_0$表示经验赔付率, $F/R_0$表示固定费用比率.
+\end{frame}
+\subsection{纯保费法v.s.赔付率法}
+\begin{frame}
+\begin{itemize}
+	\item 两种方法\green{等价}, 因为其原理都是基本保险方程.
+	\item 纯保费法适用于\green{风险单位数容易确定}. 商业火灾保险的风险单位在不同个体风险之间难以保持一致, 不适宜用纯保费.
+	\item \green{新业务}的费率厘定最好用纯保费.
+	\item 经验期费率变化较大, \green{等水平已赚保费不好求时}, 宜用纯保费法.
+\end{itemize}
+\end{frame}
+\section*{}
+\begin{frame}
+\begin{enumerate}
+		\item 阅读教材3.4-3.5. 
+		\item 自测课后习题.
+		\item 在3月29日晚上11点之前, 完成大作业一,提交到邮箱nonlife\_actuarial@163.com.
+\end{enumerate}
+\end{frame}
+\end{document}

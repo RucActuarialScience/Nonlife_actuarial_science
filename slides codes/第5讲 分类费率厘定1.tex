@@ -1,0 +1,392 @@
+\documentclass[professionalfont]{beamer}
+\usepackage{newtxtext}
+\usepackage[UTF8, heading = false, scheme = plain]{ctex}
+\mode<presentation>{\usetheme{Warsaw}}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{caption}[numbered]
+\usepackage{hyperref} 
+\usepackage{bbm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{xcolor}
+\def\R{{\mathbb R}}  
+\def\E{{\mathbb E}}  
+\lstset{basicstyle=\tiny\ttfamily,
+	numbers=left,
+	escapeinside=||
+}
+\newcommand{\Rcode}[1]{\textcolor{blue}{\small \textrm{#1}}}
+\newcommand{\Rout}[1]{\textcolor{green}{\small \textrm{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+
+\title{第5讲：分类费率厘定 1}
+\author{高光远}
+\institute{中国人民大学~统计学院}
+\date{}
+\begin{document}
+%%title frame
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{主要内容}
+	\tableofcontents
+\end{frame}
+
+%%table of contents
+
+
+%%normal frame
+\section{风险分类}
+\begin{frame}
+\begin{itemize}
+	\item 总平均费率厘定(overall indication)从整体上保证了保费的充足性. 但它没有考虑不同个体间的风险差异. 
+	\item 对于大部分保险产品, 个体的经验损失数据很少, 需要把具有相近潜在损失的个体划分为一个风险集合, 并对其进行费率厘定, 称为\red{分类费率厘定(classification rating)}.
+	\item 对个体风险进行分类的特征通常称为\blue{分类变量}或\blue{费率因子(rating factor)}.
+	\item \blue{风险分类}是通过\blue{分类变量}将所有个体风险划分为若干个风险集合的过程.
+\end{itemize}
+注: 这里的分类变量指\textbf{风险分类变量}和统计学上的分类变量(categorical variable)不同.
+
+\end{frame}
+\begin{frame}
+	\begin{itemize}
+		\item 风险分类有助于克服个体损失数据不足的问题. 
+		\item 风险分类的目的是获得相对同质(homogeneous)的风险子集.
+		\item 分类费率厘定有利于消除\red{逆选择(anti-selection)}和\red{道德风险(morality risk)}.
+		\item 选择分类变量时, 要从精算、经营、社会和法律等不同角度进行评价.
+	\end{itemize}
+\end{frame}
+\subsection{精算角度}
+\begin{frame}{Statistical significance, Homogeneity, Credibility}
+
+	\begin{itemize}
+		\item 通过建立统计模型, 评估不同风险类别的潜在损失是否具有显著的统计差异(\red{statistical significance}).
+		\item 每个风险类别中个体的潜在损失足够接近 VS 每个风险类别中的风险单位数足够多, 即 \\
+	        \begin{center}{\red{同质性(homogeneity)} VS \red{可靠性(credibility)}}\end{center}
+\end{itemize}
+\end{frame}
+\begin{frame}{市场机制和逆选择}
+	恰当地选择分类变量有利于消除\red{逆选择(anti-selection)}
+	
+	~
+	
+	例: \\
+	A类被保险人的潜在损失为100, \\
+	B类被保险人的潜在损失为200. \\
+	保险公司1没发现AB的差异性, 使用费率150. \\
+	保险公司2发现了AB的差异性, 使用费率100(A)和200(B). \\
+	\textbf{结果}, A类被保险人更倾向于购买保险公司2的产品, B类被保险人更倾向于购买保险公司1的产品. \\
+	\textbf{最后}, 保险公司\textbf{1亏损}, 保险公司\textbf{2盈利}.
+\end{frame}
+\subsection{经营角度}
+\begin{frame}{Objective, Inexpensive to administer, Verifiable}
+\begin{itemize}
+	\item \blue{Objective}: 分类变量的定义要清晰明了. 
+	\item \blue{Inexpensive to administer}: 分类变量的度量成本不能过高. 
+	\item \blue{Verifiable}: 分类变量容易度量, 不易受到人为操纵, 避免道德风险. 
+\end{itemize}
+\end{frame}
+\begin{frame}{分类变量的度量成本}
+	 例:\\
+	 A类潜在损失800, \\
+	 B类潜在损失1000, \\
+	 C类潜在损失1200, \\
+	 度量该分类变量的费用为200.\\
+	 如果不使用该分类变量, 每类的保险成本为1000. \\
+	 如果使用该分类变量, 则A, B, C的保险成本为1000, 1200, 1400, 都高于1000. \\
+	 保险公司和被保险人都不愿使用该分类变量.
+\end{frame}
+\subsection{社会和法律角度}
+\begin{frame}{Affordability, Causality, Controllability, Privacy}
+\begin{itemize}
+	\item	Affordability: 在强制性保险中, 风险分类需要考虑到所有被保险人对费率的承受能力.
+	\item	Causality: 分类变量和潜在损失有直接的因果关系.
+	\item	Controllability: 理想的分类变量满足可控性, 即被保险人可以控制自己所属的风险集合. 
+	\item Privacy: 分类变量不宜涉及个人隐私. 
+	\item	很多国家的法律规定, 风险分类不能有种族歧视和性别歧视, 即使它们和潜在损失有显著的关系.
+\end{itemize}
+\end{frame}
+
+\section{确定性分类费率厘定模型}
+\begin{frame}{乘法模型和加法模型}
+	假设有两个费率因子$x_1, x_2$, 它们为分类变量, 分别有$I$和$J$个\blue{水平}. 这两个分类变量可以把被保险人划分为$I\times J$个\blue{风险集合}. 计属于$(i,j)_{i=1:I, j=1:J}$风险集合的被保险人风险单位数为$n_{ij}$,经验赔款为$C_{ij}$, 经验纯保费为$Y_{ij}=C_{ij}/n_{ij}$, 损失期望为$\mu_{ij}=\E(Y_{ij})$.\\
+	
+	~
+	
+	乘法模型(multiplicative model)假设
+	$$\mu_{ij}=\alpha_i\times\beta_j.$$
+	加法模型(additive model)假设
+	$$\mu_{ij}=\alpha_i+\beta_j.$$
+\end{frame}
+\begin{frame}{乘法模型和加法模型}
+	\begin{itemize}
+		\item 基于以上的模型, 可以用$I+J$个\red{相对费率}$(\alpha_{i})_{i=1:I}$, $(
+		\beta_{j})_{j=1:J}$对$I\times J$个风险集合进行分类费率厘定.
+		\item 以上的模型有一个隐含假设是: 费率因子$x_1,x_2$之间没有\blue{交互作用(interaction effect)}.
+\end{itemize}
+\end{frame}
+\subsection{单变量分析法}
+\begin{frame}{例}
+原则: \textbf{每次}仅计算\textbf{一个}分类变量的不同水平所对应的相对费率.
+{\scriptsize
+	\begin{table}[]
+		\centering
+		\caption{汽车保单的经验赔付率}
+		\label{one_way}
+		\begin{tabular}{ccccccc}
+			\hline
+			& \multicolumn{2}{c}{车型1} & \multicolumn{2}{c}{车型2} & \multicolumn{2}{c}{Total} \\
+			& Exposure  & Loss Ratio  & Exposure  & Loss Ratio  & Exposure   & Loss Ratio   \\ \hline
+			地区A   & 2000      & 40\%        & 8000      & 80\%        & 10000      & 72\%         \\
+			地区B   & 8000       & 40\%        & 2000      & 80\%        & 10000       & 48\%         \\
+			Total & 10000      & 40\%        & 10000     & 80\%        & 12500      & 60\%         \\ \hline
+		\end{tabular}
+	\end{table}}
+表\ref{one_way}给出的赔付率是基于\blue{总平均费率},  即每个风险集合都采用一样的总平均费率: $$\text{赔付率}=\frac{\text{赔款}}{\text{风险单位数}\times\text{总平均费率}}$$
+\end{frame}
+\begin{frame}{例(续)}
+地区A的赔付率为72\%, 地区B的赔付率为48\%. 所以总平均费率对于地区A显得过少, 对于地区B显得过多. \\
+
+~
+
+以地区A车型1为\red{基础类别}, 地区B的相对费率应该为 $0.48/0.72=0.6667$, 车型2的相对费率应该为$0.8/0.4=2$. 这样可得到如下的相对费率: 
+\begin{table}[]
+	\centering
+	\caption{应用单变量分析法计算的相对费率}
+	\label{one_way_result}
+	\begin{tabular}{c|cc}
+		\hline
+		& 车型1    & 车型2    \\ \hline
+		地区A & 1      & 2      \\
+		地区B & 0.6667 & 1.3334 \\ \hline
+	\end{tabular}
+\end{table}
+\end{frame}
+\begin{frame}{例(续)：结果讨论}
+\begin{itemize}	
+\item 相对费率厘定的理想目标是: \blue{使得每个风险集合中的赔付率相等}.
+\item 使用表\ref{one_way_result}的相对费率计算新的赔付率. A1的赔付率为0.4, A2的赔付率为0.8/2=0.4, B1的赔付率为0.4/0.6667=0.6000, B2的赔付率为0.8/1.3334=0.6000.
+\item 使用表\ref{one_way_result}的相对费率, 并没达到我们的理想目标. 原因是:\\
+地区A比地区B有更多的``高风险''车型2, 这使得地区A的赔付率远高于地区B的赔付率. \blue{所以0.48/0.72不能完全归结于A和B的差异, 它还包含了在A和B地区车型分布的差异}.
+\item 实际上, 地区AB无差异, 车型2与车型1的相对费率为2.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{例(续)：单变量分析法适用的情形}
+	
+{\scriptsize
+\begin{table}
+\centering
+\caption{单变量分析法适用的情形}
+\label{my-label}
+\begin{tabular}{ccccccc}
+\hline
+      & \multicolumn{2}{c}{车型1} & \multicolumn{2}{c}{车型2} & \multicolumn{2}{c}{Total} \\
+      & Exposure  & Loss Ratio  & Exposure  & Loss Ratio  & Exposure   & Loss Ratio   \\ \hline
+地区A   & 2000      & 40\%        & 8000      & 80\%        & 10000      & 72\%         \\
+地区B   & 500       & 40\%        & 2000      & 80\%        & 2500       & 72\%         \\
+Total & 2500      & 40\%        & 10000     & 80\%        & 12500      & 72\%         \\ \hline
+\end{tabular}
+\end{table}}
+\begin{itemize}	
+	\item 在地区A和B, 车型2的风险单位数都为车型1的两倍.
+	\item 赔付率72\%和72\%的差异\blue{完全归结}于地区分类变量, 即地区的相对费率为1.
+	\item 同理, 车型2的相对费率为2. 
+\end{itemize}
+
+~
+
+%\textbf{注: 教材4.2.2为选读, 不在考察范围内.}
+\end{frame}
+\subsection{迭代法}
+\begin{frame}
+	\begin{itemize}
+	\item \blue{迭代法(iteration method)}又称作\blue{最小偏差法(minimum bias method)}.
+	\item 迭代法可以克服单变量分析法的缺点.
+	\item 迭代法的关键在于建立迭代公式.
+	\item 根据迭代公式的含义和性质, 可分为
+	\begin{enumerate}
+		\item 直接法
+		\item 边际总和法
+		\item 最小卡方法
+		\item 最小二乘法
+		\item 极大似然法
+		\item 加权边际总和法
+	\end{enumerate}
+	\end{itemize}
+\end{frame}
+\begin{frame}{Setting}
+	假设有两个费率因子$x_1, x_2$, 它们为分类变量, 分别有$I$和$J$个水平. 这两个分类变量可以把被保险人划分为$I\times J$个风险集合. 计属于$(i,j)_{i=1:I, j=1:J}$风险集合的被保险人风险单位数为$n_{ij}$,经验赔款为$C_{ij}$, 经验纯保费为$Y_{ij}=C_{ij}/n_{ij}$, 损失期望为$\mu_{ij}=\E(Y_{ij})$.\\
+	
+	~
+	
+	乘法模型(multiplicative model)假设
+	$$\mu_{ij}=\alpha_i\times\beta_j.$$
+	加法模型(additive model)假设
+	$$\mu_{ij}=\alpha_i+\beta_j.$$
+\end{frame}
+\begin{frame}{直接法}
+	原理: $\alpha_i=\frac{\E(Y_{ij})}{\beta_j}=\E\left[\frac{Y_{ij}}{\beta_j}\right]$, $\beta_j=\frac{\E(Y_{ij})}{\alpha_i}=\E\left[\frac{Y_{ij}}{\alpha_i}\right]$. 这两个式子可用$Y_{ij}/\beta_j, Y_{ij}/\alpha_i$的\blue{加权平均}进行估计, 权重为$n_{ij}$ (风险单位数越多, 经验损失越能反映潜在损失). 
+	
+	~
+	
+	迭代公式:
+	\begin{equation}\label{straight}
+	\begin{aligned}
+	\alpha_i&=\frac{\sum_{j=1}^Jn_{ij}\frac{Y_{ij}}{\beta_j}}{\sum_{j=1}^Jn_{ij}},\qquad\text{for} ~ i=1,\ldots,I\\
+	\beta_j&=\frac{\sum_{i=1}^In_{ij}\frac{Y_{ij}}{\alpha_i}}{\sum_{i=1}^In_{ij}},\qquad \text{for} ~ j=1,\ldots,J
+	\end{aligned}
+	\end{equation}
+	
+\end{frame}
+\begin{frame}{边际总和法(marginal total method)}
+原理: 每个费率因子的不同水平计算的\blue{纯保费}之和等于对应的\blue{经验赔款}.
+\begin{equation}\label{marginal1}
+\begin{aligned}
+\sum_{j=1}^{J}C_{ij}&=\sum_{j=1}^{J}n_{ij}\alpha_i\beta_j,\qquad \text{for} ~ i=1,\ldots,I\\
+\sum_{i=1}^{I}C_{ij}&=\sum_{i=1}^{I}n_{ij}\alpha_i\beta_j,\qquad \text{for} ~ j=1,\ldots,J
+\end{aligned}
+\end{equation}
+上面$I+J$个方程等价于
+\begin{equation}\label{marginal2}
+\begin{aligned}
+\alpha_i&=\frac{\sum_{j=1}^{J}C_{ij}}{\sum_{j=1}^{J}n_{ij}\beta_j},\qquad \text{for} ~ i=1,\ldots,I\\
+\beta_j&=\frac{\sum_{i=1}^{I}C_{ij}}{\sum_{i=1}^{I}n_{ij}\alpha_i},\qquad \text{for} ~ j=1,\ldots,J
+\end{aligned}
+\end{equation}
+\end{frame}
+\begin{frame}{边际总和法(marginal total method)}
+\begin{itemize}
+	\item 给定初始值$\beta^0_j=1, j=1,\ldots, J$. 通过迭代\eqref{marginal2}, 可以得到方程组\eqref{marginal1}的解.
+	\item 可以假设$\mu_{ij}=\mu\alpha_i\beta_j$, 这里$\mu$表示总平均费率, 即$$\mu=\frac{\sum_{ij}C_{ij}}{\sum_{ij}n_{ij}}$$
+	\item 加法模型的迭代公式如下:
+	\begin{equation}\label{marginal3}
+	\begin{aligned}
+	\alpha_i&=\frac{\sum_{j=1}^{J}C_{ij}-n_{ij}\beta_j}{\sum_{j=1}^{J}n_{ij}},\qquad \text{for} ~ i=1,\ldots,I\\
+	\beta_j&=\frac{\sum_{i=1}^{I}C_{ij}-n_{ij}\alpha_i}{\sum_{i=1}^{I}n_{ij}},\qquad \text{for} ~ j=1,\ldots,J
+	\end{aligned}
+	\end{equation}
+\end{itemize}
+\end{frame}
+\begin{frame}{最小卡方法}
+原理: 估计相对费率使得如下的目标函数(或损失函数)最小.
+$$\underset{\alpha,\beta}{\arg \min}\sum_{ij}\frac{n_{ij}(Y_{ij}-\alpha_i\beta_j)^2}{\alpha_i\beta_j}$$
+\begin{itemize}
+	\item 上述目标函数类似于$\chi^2$检验中的统计量.
+	\item 上述目标函数关于$\alpha,\beta$求导, 可得如下迭代公式
+		\begin{equation}\label{chi1}
+		\begin{aligned}
+		\alpha_i&=\left[\frac{\sum_{j=1}^{J}\frac{n_{ij}Y_{ij}^2}{\beta_j}}{\sum_{j=1}^Jn_{ij}\beta_j}\right]^{1/2},\qquad \text{for} ~ i=1,\ldots,I\\
+		\beta_j&=\left[\frac{\sum_{i=1}^{I}\frac{n_{ij}Y_{ij}^2}{\alpha_i}}{\sum_{i=1}^In_{ij}\alpha_i}\right]^{1/2},\qquad \text{for} ~ j=1,\ldots,J
+		\end{aligned}
+		\end{equation}
+\end{itemize}
+\end{frame}
+\begin{frame}{最小卡方法}
+求证: 保费总额不会小于经验赔款总额, 即 $$\sum_{j=1}^Jn_{ij}\alpha_i\beta_j\geq\sum_{j=1}^JC_{ij}\text{ and } \sum_{i=1}^In_{ij}\alpha_i\beta_j\geq\sum_{i=1}^IC_{ij}$$
+证明: $$\alpha_i^2=\frac{\sum_{j=1}^{J}\frac{n_{ij}Y_{ij}^2}{\beta_j}}{\sum_{j=1}^Jn_{ij}\beta_j}=\sum_{j=1}^J\left[\frac{n_{ij}\beta_{j}}{\sum_{h=1}^Jn_{ih}\beta_h}\left(\frac{Y_{ij}}{\beta_j}\right)^2\right]$$
+假设随机变量 $U_j=\frac{Y_{ij}}{\beta_j}$，其pmf为 $\Pr(U_j)=\frac{n_{ij}\beta_{j}}{\sum_{h=1}^Jn_{ih}\beta_h}$. 所以
+$$\alpha_i^2=\E(U^2)\geq\E(U)^2.$$
+
+
+\end{frame}
+\begin{frame}{最小卡方法}
+	So 
+	$$\alpha_i\geq\E(U)=\sum_{j=1}^J\left[\frac{n_{ij}\beta_{j}}{\sum_{h=1}^Jn_{ih}\beta_h}\frac{Y_{ij}}{\beta_j}\right]=\frac{\sum_{j=1}^Jn_{ij}Y_{ij}}{\sum_{j=1}^Jn_{ij}\beta_j}$$
+	Reorganizing the above equation leads to
+	$$\sum_{j=1}^Jn_{ij}\alpha_i\beta_j\geq\sum_{j=1}^JC_{ij}$$
+\end{frame}
+\begin{frame}{最小二乘法}
+原理: 估计相对费率使得如下的目标函数(或损失函数)最小.
+$$\underset{\alpha,\beta}{\arg \min}\sum_{ij}n_{ij}(Y_{ij}-\alpha_i\beta_j)^2.$$
+
+~
+
+迭代方程为
+\begin{equation}\label{ls1}
+\begin{aligned}
+\alpha_i&=\frac{\sum_{j=1}^JC_{ij}\beta_j}{\sum_{j=1}^Jn_{ij}\beta^2_j},\qquad \text{for} ~ i=1,\ldots,I\\
+\beta_j&=\frac{\sum_{i=1}^IC_{ij}\alpha_i}{\sum_{i=1}^In_{ij}\alpha^2_i},\qquad \text{for} ~ j=1,\ldots,J
+\end{aligned}
+\end{equation}
+
+~
+
+对于加法模型, 其等价于线性模型(linear model).	
+\end{frame}
+
+\begin{frame}{极大似然法(指数分布)}
+	原理: 估计相对费率使得似然函数最大.
+	
+	
+	~
+	
+	假设$C_{ij}$服从参数为$n_{ij}\alpha_i\beta_j$的指数分布, 则全样本 $\mathcal{D}=(C_{ij})_{i=1:I,j=i:J}$ 的\red{似然函数(likelihood)}为
+	$$L(\alpha,\beta|\mathcal{D})=\prod_{i,j}\frac{1}{n_{ij}\alpha_i\beta_j}\exp\left[-\frac{n_{ij}Y_{ij}}{n_{ij}\alpha_i\beta_j}\right].$$
+	其\red{对数似然函数(log likelihood)}为$$l(\alpha,\beta|\mathcal{D})=\log L(\alpha,\beta|\mathcal{D})=\sum_{ij}\left[-\ln n_{ij}-\ln\alpha_i-\ln\beta_j-\frac{Y_{ij}}{\alpha_i\beta_j}\right]$$
+\end{frame}
+
+\begin{frame}{极大似然法(指数分布)}
+	上式关于$\alpha,\beta$分别求偏导, 并令其等于零, 可得如下的迭代公式
+	\begin{equation}\label{likelihood1}
+	\begin{aligned}
+	\alpha_i&=\frac{1}{J}\sum_{j=1}^J\frac{Y_{ij}}{\beta_j},\qquad \text{for} ~ i=1,\ldots,I\\
+	\beta_j&=\frac{1}{I}\sum_{i=1}^I\frac{Y_{ij}}{\alpha_i},\qquad \text{for} ~ j=1,\ldots,J
+	\end{aligned}
+	\end{equation}
+\end{frame}
+\begin{frame}{极大似然法(伽马分布)}
+	假设$C_{ij}$服从期望为$n_{ij}\alpha_i\beta_j$的伽马分布. 可以证明如下的迭代公式:
+		\begin{equation}\label{likelihood2}
+		\begin{aligned}
+		\alpha_i&=\frac{\sum_{j=1}^J\frac{C_{ij}}{\beta_j}}{\sum_{j=1}^Jn_{ij}},\qquad \text{for} ~ i=1,\ldots,I\\
+		\beta_j&=\frac{\sum_{i=1}^I\frac{C_{ij}}{\alpha_i}}{\sum_{i=1}^In_{ij}},\qquad \text{for} ~ j=1,\ldots,J
+		\end{aligned}
+		\end{equation}
+	
+~
+
+伽马分布的极大似然法等价于直接法\eqref{straight}.
+\end{frame}
+\begin{frame}{加权边际总和法}
+	式\eqref{marginal1}等价于
+\begin{equation}\label{marginal0}
+\begin{aligned}
+\sum_{j=1}^Jn_{ij}(\alpha_i\beta_j-Y_{ij})&=0,\qquad \text{for} ~ i=1,\ldots,I\\
+\sum_{i=1}^In_{ij}(\alpha_i\beta_j-Y_{ij})&=0,\qquad \text{for} ~ j=1,\ldots,J
+\end{aligned}
+\end{equation}
+引入权重$\omega_{ij}$, 得如下加权边际总和法:
+\begin{equation}\label{marginal0}
+\begin{aligned}
+\sum_{j=1}^J\omega_{ij}n_{ij}(\alpha_i\beta_j-Y_{ij})&=0,\qquad \text{for} ~ i=1,\ldots,I\\
+\sum_{i=1}^I\omega_{ij}n_{ij}(\alpha_i\beta_j-Y_{ij})&=0,\qquad \text{for} ~ j=1,\ldots,J
+\end{aligned}
+\end{equation}
+\end{frame}
+
+\begin{frame}{加权边际总和法}
+	前面的五种迭代方法都可以表述为特殊的加权边际总和法
+	\begin{enumerate}
+		\item 直接法: $\omega_{ij}=1/(\alpha_i\beta_j)$
+		\item 边际总和法: $\omega_{ij}=1$
+		\item 最小卡方法: $\omega_{ij}=1+Y_{ij}/(\alpha_i\beta_j)$
+		\item 最小二乘法: $\omega_{ij}=\alpha_i\beta_j$
+		\item 极大似然法(伽马分布): $\omega_{ij}=1/(\alpha_i\beta_j)$
+\end{enumerate}
+\end{frame}
+\section*{}
+\begin{frame}
+\begin{enumerate}
+		\item 阅读教材 4.1- 4.3.
+		\item 自测课后习题. 
+		\item 选做: 证明式\eqref{chi1}.
+\end{enumerate}
+\end{frame}
+\end{document}
