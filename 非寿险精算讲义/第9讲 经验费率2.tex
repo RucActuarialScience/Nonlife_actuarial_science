@@ -1,0 +1,335 @@
+\documentclass[professionalfont]{beamer}
+\usepackage{newtxtext}
+\usepackage[heading = false, scheme = plain]{ctex}
+\mode<presentation>{\usetheme{Warsaw}}
+%\usecolortheme{dove}
+\setbeamertemplate{footline}{}
+\beamertemplatenavigationsymbolsempty
+\addtobeamertemplate{navigation symbols}{}{%
+    \usebeamerfont{footline}%
+    \usebeamercolor[black]{footline}%
+    \hspace{1em}%
+    \insertframenumber/\inserttotalframenumber
+}
+\setbeamertemplate{caption}[numbered]
+\usepackage{hyperref} 
+\usepackage{bbm}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{dsfont}
+\def\R{{\mathbb R}}  %%
+\def\E{{\mathbb E}}  %
+\def\N{{\mathbb N}}  %%
+\def\bx{\boldsymbol{x}}
+\def\bM{\boldsymbol{M}}
+\def\ba{\boldsymbol{a}}
+\def\be{\boldsymbol{e}}
+\def\bI{\boldsymbol{I}}
+\def\bE{\boldsymbol{E}}
+\def\bc{\boldsymbol{c}}
+
+
+\lstset{basicstyle=\tiny\ttfamily,
+	numbers=left,
+	breaklines=true,
+	language=R,
+}
+\newcommand{\Rcode}[1]{\textcolor{blue}{\small \textrm{#1}}}
+\newcommand{\Rout}[1]{\textcolor{green}{\small \textrm{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+
+
+
+
+\title{第9讲: 经验费率2}
+\author{高光远}
+\institute{中国人民大学~统计学院}
+\date{}
+\begin{document}
+%%title frame
+\begin{frame}
+	\titlepage
+\end{frame}
+
+\begin{frame}{主要内容}
+	\tableofcontents
+\end{frame}
+
+%%table of contents
+%\AtBeginSection[]
+%{
+%	\begin{frame}{}
+%		\tableofcontents[currentsection]
+%	\end{frame}
+%}
+
+
+
+%%normal frame
+
+\section{B\"uhlmann-Straub信度模型}
+\subsection{模型假设}
+\begin{frame}
+\begin{equation}\label{frequency}\E(N/m)=\lambda, \text{Var}(N/m)=\sigma_f^2/{m}.\end{equation} 
+\begin{equation}\label{severity}\text{Var}(\bar{X})=\text{Var}\left(\frac{X_1+\cdots+X_N}{N}\right)=\sigma^2_X/N.\end{equation}
+\begin{equation}\label{pure}
+\begin{aligned}
+\sigma^2_P=\text{Var}(P)&=\E_N\left[\text{Var}_P(P|N)\right]+\text{Var}_N\left[\E_P(P|N)\right]\\&=\E_N\left[\frac{N\sigma^2_X}{m^2}\right]+\text{Var}_N\left[\frac{\xi N}{m}\right]\\
+&=\frac{\lambda\sigma^2_X+\xi^2\sigma^2_f}{m}
+\end{aligned}
+\end{equation}
+\end{frame}
+\begin{frame}
+个体风险的风险由$\theta$度量. 在给定风险$\theta$时,  令$Y_i$为第$i$年的
+\begin{itemize}
+\item 经验索赔频率. 其期望记为$\mu(\theta)$. 根据式\eqref{frequency}, 方差可记为$v(\theta)/m_i$, 其中, $m_i$为第$i$年的\blue{风险单位数}. 
+\item 经验索赔强度. 其期望记为$\mu(\theta)$.  根据式\eqref{severity}, 方差可记为$v(\theta)/m_i$, 其中, $m_i$为第$i$年的\blue{索赔次数}. 
+\item 经验纯保费率. 其期望记为$\mu(\theta)$.   根据式\eqref{pure} 方差可记为$v(\theta)/m_i$, 其中,  $m_i$为第$i$年的\blue{风险单位数}. 
+\end{itemize}
+令$\bar{Y}$为整个经验期$n$的平均索赔频率(索赔强度或者纯保费率).
+$$\bar{Y}=\frac{\sum_{i=1}^{n}m_iY_i}{\sum_{i=1}^{n}m_i}=\frac{\sum_{i=1}^{n}m_iY_i}{m}.$$
+其中$m=\sum_{i=1}^{n}m_i$. 
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item 在给定风险$\theta$时, $\bar{Y}$的\blue{条件期望和方差}分别为
+\begin{equation}
+\E(\bar{Y}|\theta)=\mu(\theta), \text{Var}(\bar{Y}|\theta)=\frac{v(\theta)}{m}.
+\end{equation}
+\item $\bar{Y}$的\blue{非条件期望和方差}分别为
+\begin{equation}
+\begin{aligned}
+\E(\bar{Y})&=\E_\theta\left[\mu(\theta)\right]=\mu,\\
+\text{Var}_\theta(\bar{Y})&=\E\left[\frac{v(\theta)}{m}\right]+\text{Var}_\theta\left[\mu(\theta) \right]=\frac{v}{m}+a.
+\end{aligned}
+\end{equation}
+其中, $\mu$为\blue{风险集合的平均索赔频率(索赔强度或者纯保费率)}, $v$称为\red{过程方差的均值},  $a$称为\red{假设均值的方差}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item 过程方差的均值反映了\blue{个体风险自身的不确定性}. $v$越大, 个体风险的经验损失的可信度越小.
+\item 假设均值的方差反映了\blue{不同个体风险之间的差异性}. $a$越大, 个体风险与整个风险集合的平均值差别越大, 间接地, 个体风险的经验损失的可信度越大.
+\item $m$反映了\blue{数据量}, $m$越大, 表示个体风险的经验损失数据量越大, 其可信度越大.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+\item B\"uhlmann-Straub的 \red{信度因子}为
+\begin{equation}
+Z=\frac{\text{假设均值的方差}}{\bar{Y}\text{的非条件方差}}=\frac{a}{a+v/m}=\frac{m}{m+K}
+\end{equation}
+其中, \red{$K=v/a$称为B\"uhlmann参数}.
+\item  B\"uhlmann-Straub的信度预测值为
+$$\hat{Y}^\theta=Z\bar{Y}^\theta+(1-Z)\mu$$
+\item 当$m_i=e$时, 模型简化为\red{B\"uhlmann模型}. 信度因子为$$Z=\frac{ne}{ne+K}$$
+\end{itemize}
+\end{frame}
+
+\subsection{参数估计}
+\begin{frame}
+使用B\"uhlmann-Straub信度模型时, 必须估计$\mu, v, a$的值. 假设包含\blue{$r=1,\ldots, R$个风险}. \blue{用$i$表示经验期, $r$表示风险}.
+\begin{itemize}
+\item $Y_i^r, i=1,\ldots, n^r, r=1,\ldots, R$: 个体风险$r$在第$i$年的\blue{经验索赔频率(索赔强度或者纯保费率)}, 其中, $n^r$为个体风险$r$的观察年数.
+\item  $m_i^r, i=1,\ldots, n^r, r=1,\ldots, R$: 个体风险$r$在第$i$年的\blue{风险单位数(或者索赔次数)}.
+\item $\bar{Y}^r=1/m^r\sum_{i=1}^{n^r}m_i^rY_i^r$ : \blue{个体风险$r$}的总平均经验索赔频率(索赔强度或者纯保费率). 其中, $m^r=\sum_{i=1}^{n^r}m_i^r$为个体风险$r$的总风险单位数(或者索赔次数.).
+\item $\bar{Y}=1/m\sum_{r=1}^{R}m^r\bar{Y}^r$: \blue{风险集合}的总平均经验索赔频率(索赔强度或者纯保费率). 其中, $m=\sum_{r=1}^{R}m^r$为风险集合的总风险单位数(或者索赔次数.).
+\item $\theta^r$: 个体风险$r$的参数.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+对于B\"uhlmann-Straub模型, 参数的无偏估计为: 
+\begin{equation*}
+\begin{aligned}
+\hat{\mu}&=\bar{Y}\\
+\hat{v}(\theta^r)&=\frac{1}{n^r-1}\sum_{i=1}^{n^r}m_i^r(Y_i^r-\bar{Y}^r)^2\\
+\hat{v}&=\frac{\sum_{r=1}^R(n^r-1)\hat{v}(\theta^r)}{\sum_{r=1}^R (n^r-1)}\\
+\hat{a}&=\left(m-\frac{1}{m}\sum_{r=1}^R(m^r)^2\right)^{-1}\left[\sum_{r=1}^Rm^r(\bar{Y}^r-\bar{Y})^2-\hat{v}(R-1)\right]
+\end{aligned}
+\end{equation*}
+若$\hat{a}<0$, 取$Z=0$. 个体风险$r$的损失经验$\bar{Y}^r$的信度因子为:
+$$\hat{Z}^r=\frac{m^r}{m^r+\hat{v}/\hat{a}}$$
+
+\end{frame}
+
+\begin{frame}
+对于B\"uhlmann模型, 
+\begin{itemize}
+\item $Y_i^r, i=1,\ldots, n, r=1,\ldots, R$: 个体风险$r$在第$i$年的经验索赔频率(索赔强度或者纯保费率), 其中, $n$为个体风险$r$的观察年数.
+\item  $m_i^r=e, i=1,\ldots, n, r=1,\ldots, R$: 个体风险$r$在第$i$年的风险单位数(或者索赔次数).
+\item $\bar{Y}^r=1/(ne)\sum_{i=1}^{n}eY_i^r=1/n\sum_{i=1}^{n}Y_i^r$ : 个体风险$r$的总平均经验索赔频率(索赔强度或者纯保费率). 
+\item $\bar{Y}=1/R\sum_{r=1}^{R}\bar{Y}^r$: 风险集合的总平均经验索赔频率(索赔强度或者纯保费率). 
+\item $\theta^r$: 个体风险$r$的参数.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+对于B\"uhlmann模型, 参数的无偏估计可以简化为
+\begin{equation*}
+\begin{aligned}
+\hat{\mu}&=\bar{Y}\\
+\hat{v}(\theta^r)&=\frac{1}{n-1}\sum_{i=1}^{n}(Y_i^r-\bar{Y}^r)^2\\
+\hat{v}&=\frac{1}{R}\sum_{r=1}^R\hat{v}(\theta^r)\\
+\hat{a}&=\frac{1}{R-1}\sum_{r=1}^R(\bar{Y}^r-\bar{Y})^2-\frac{\hat{v}}{ne}
+\end{aligned}
+\end{equation*}
+个体风险$r$的损失经验$\bar{Y}^r$的信度因子为:
+$$\hat{Z}^r=\frac{ne}{ne+\hat{v}/\hat{a}}$$
+\end{frame}
+
+\subsection{平衡调整}
+\begin{frame}
+为了使得信度保费总和等于实际损失的总和, 即
+\begin{equation}
+\sum_{r=1}^Rm^r\bar{Y}^r=\sum_{r=1}^R m^r\left[\hat{Z}^r\bar{Y}^r+(1-\hat{Z}^r)\tilde{\mu}\right]
+\end{equation}
+可以证明, 风险集合的总平均保费$\tilde{\mu}$为:
+\begin{equation}\label{balance}
+\tilde{\mu}=\frac{\sum_{r=1}^{R}\hat{Z}^r\bar{Y}^r}{\sum_{r=1}^{R}\hat{Z}^r}
+\end{equation}
+\end{frame}
+\section{奖惩系统}
+\begin{frame}
+\begin{itemize}
+\item 如果上一年没有出险, 在续保时给予\blue{折扣}. 如果上一年有出险, 在续保时\blue{可能提高}保费.
+\item \red{奖惩系统}的英文名为\red{bonus-malus system (BMS)}, 或者 \red{no-claim discount (NCD)}.
+\item 奖惩系统考虑的是\blue{上一年出险次数}, 与索赔金额没有关系.
+\item 奖惩系统的主要目的是 
+\begin{enumerate}
+\item 费率更加公正.
+\item 减少保险公司处理小赔案的费用
+\item 鼓励谨慎驾驶
+\end{enumerate}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+奖惩系统的要素:
+\begin{itemize}
+\item 各个等级的\blue{奖惩系数}: $\bc$
+\item 初始等级
+\item \red{转移概率矩阵: $\bM$}
+\end{itemize}
+\end{frame}
+\subsection{稳态概率分布}
+
+\begin{frame}
+基本假设：
+\begin{itemize}
+\item 给定个体保单的索赔频率不随时间变化, 且索赔次数服从柏松分布.
+\item 保单组合不会有新增保单也不会有退保保费.
+\item 初次投保时, 每份保单缴纳完全相同的保费, \blue{奖惩系数}为1.
+\end{itemize}
+稳态概率：
+\begin{itemize}
+\item 对于一个给定的\blue{个体保单}, 假设其索赔频率为常数, 则经过若干年后, 它属于各个保费水平的概率趋于稳定. 
+\item 对于一个固定的\blue{保单组合}, 经过若干年后, 保单在各个保费水平的分布也趋于稳定.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+上一年\blue{未发生索赔}时, 续保的优待比例在上一年度优待比例基础上增加10\%. 优待比例最高为30\%. 若发生了\blue{$n$次索赔}, 续保的优待比例在上一年度优待比例基础上减少$n\times10\%$, 优待比例最小为0\%. 
+\begin{itemize}
+\item 该奖惩系统有四个等级, 四个保费水平的奖惩系数为 $\bc=(0.7, 0.8, 0.9, 1.0)'$. 
+\item \blue{续期保费的奖惩系数}只取决于\blue{当年}的奖惩系数和索赔次数, 故每年的奖惩系数形成一个\blue{马尔可夫链 (Markov chain)}.
+\item 因索赔频率不变化, 该马尔可夫链为\blue{齐次(homogeneous)}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+$\bM$表示马尔可夫链的\blue{转移概率矩阵}:
+\begin{equation}
+\bM=\begin{bmatrix} q_{11} & q_{12} & q_{13} & q_{14} \\q_{21} & q_{22} & q_{23} & q_{24} \\q_{31} & q_{32} & q_{33} & q_{34} \\q_{41} & q_{42} & q_{43} & q_{44} \\ \end{bmatrix}
+\end{equation}
+其中, $q_{ij}$表示从$i$等级到$j$等级的概率. 具体地, 
+\begin{equation}
+\bM(\lambda)=\begin{bmatrix} p_0 & p_1 & p_2 & 1-p_0-p_1-p_2\\ p_0& 0 & p_1 & 1-p_0-p_1 \\ 0 & p_0 & 0 & 1-p_0 \\ 0 & 0 & p_0 & 1-p_0 \\ \end{bmatrix}
+\end{equation}
+其中, $p_0=e^{-\lambda}, p_1=\lambda e^{-\lambda}, p_2=\lambda^2 e^{-\lambda}/2$.
+\end{frame}
+
+\begin{frame}{个体保单的稳态分布}
+假设\blue{稳态分布}为$\ba(\lambda)=(a_1(\lambda), a_2(\lambda), a_3(\lambda), a_4(\lambda))'$, 其应满足下述方程组:
+\begin{equation}
+\begin{cases} \ba(\lambda)'\bM(\lambda)=\ba(\lambda)' \\ 
+\ba(\lambda)'\be=1 \end{cases}
+\end{equation}
+其中, $\be$为4维单位列向量. 可以证明:
+$$\ba(\lambda)'=\be'\left[\bI-\bM(\lambda)+\bE\right]^{-1}$$
+其中, $\bI$为$4\times4$的单位矩阵, $\bE$为所有元素均为1的$4\times4$的矩阵. 
+\end{frame}
+
+\begin{frame}{个体保单的稳态分布}
+亦可证明
+\begin{equation} 
+\lim_{n\to \infty}\bM^n=\begin{bmatrix} \ba(\lambda)' \\ \ba(\lambda)' \\ \ba(\lambda)' \\ \ba(\lambda)' \\ \end{bmatrix}_{4\times4}=\begin{bmatrix}a_1(\lambda), a_2(\lambda), a_3(\lambda), a_4(\lambda)\\ a_1(\lambda), a_2(\lambda), a_3(\lambda), a_4(\lambda) \\ a_1(\lambda), a_2(\lambda), a_3(\lambda), a_4(\lambda) \\ a_1(\lambda), a_2(\lambda), a_3(\lambda), a_4(\lambda) \\ \end{bmatrix}_{4\times4}
+\end{equation}
+\end{frame}
+
+\begin{frame}{保单组合的稳态分布}
+如果保单组合由\blue{两类保单}组成:  第一类索赔频率为0.2, 占保单数量的60\%;  第二类索赔频率为0.4, 占保单数量的40\%. 则保单组合的稳态分布为
+$$0.6\times\ba(0.2)+0.4\times\ba(0.4).$$
+\end{frame}
+
+\begin{frame}{保单组合的稳态分布}
+假设不同保单的索赔频率服从参数为$\alpha,\beta$的伽马分布, 密度函数为
+$$u(\lambda)=\frac{\beta^\alpha e^{-\beta\lambda}\lambda^{\alpha-1}}{\Gamma(\alpha)}$$
+此时, 保单组合中\blue{任意保单}在第$i$等级的稳态概率为
+$$a_i=\int_{0}^{\infty}a_i(\lambda)u(\lambda)d\lambda.$$
+\end{frame}
+\subsection{平均奖惩系数}
+\begin{frame}
+\begin{itemize}
+\item 对于\blue{个体保单}: 
+\begin{equation}\label{stationary}
+P(\lambda)=\ba(\lambda)'\bc=\sum_{i=1}^4 a_i(\lambda)c_i.
+\end{equation}
+\item 对于\blue{保单组合}: $$P=(a_1,a_2,a_3,a_4)'\bc=\sum_{i=1}^4 a_ic_i$$
+\end{itemize}
+\end{frame}
+\subsection{奖惩系统的弹性}
+\begin{frame}
+$A$的索赔频率为$\lambda_A$, 平均奖惩系数为$P_A$;  $B$的索赔频率为$\lambda_B$, 平均奖惩系数为$P_B$. 理想的奖惩系统应该满足
+$$\frac{P_A}{P_B}=\frac{\lambda_A}{\lambda_B}$$
+即
+$$\frac{P_A/P_B}{\lambda_A/\lambda_B}=1$$
+或者
+$$\frac{P_A-P_B}{P_B}=\frac{\lambda_A-\lambda_B}{\lambda_B}$$
+称该奖惩系统具有\blue{完全弹性}.
+\end{frame}
+\begin{frame}
+定义奖惩系统的\blue{弹性}为
+\begin{equation}\label{elasticity}
+\eta(\lambda)=\frac{\frac{d P(\lambda)}{P(\lambda)}}{\frac{d\lambda}{\lambda}}
+\end{equation}
+代入式\eqref{stationary}, 有
+$$\frac{d P(\lambda)}{d\lambda}=\sum_{i=1}^{4}\frac{da_i(\lambda)}{d\lambda}c_i.$$
+所以, 式\eqref{elasticity}可以写为:
+\begin{equation}
+\eta(\lambda)=\frac{\lambda}{P(\lambda)}\sum_{i=1}^{4}\frac{da_i(\lambda)}{d\lambda}c_i
+\end{equation}
+\blue{近似}地:
+$$\eta(\lambda)\approx \frac{\frac{P(\lambda+\Delta\lambda)-P(\lambda)}{P(\lambda)}}{\frac{\Delta \lambda}{\lambda}}$$
+\end{frame}
+
+\section*{}
+\begin{frame}
+\begin{itemize}
+\item 阅读教材5.2-5.6. 其中, 5.5信度补项为选读.
+\item 自测课后练习题.
+\item 证明式\eqref{balance}.
+\end{itemize}
+\end{frame}
+\end{document}
